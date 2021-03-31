@@ -49,6 +49,7 @@ class EditProductScreen extends StatelessWidget {
                       }
                       return null;
                     },
+                    onSaved: (name) => product.name = name,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -94,6 +95,7 @@ class EditProductScreen extends StatelessWidget {
                       }
                       return null;
                     },
+                    onSaved: (desc) => product.description = desc,
                   ),
                   SizesForm(product),
                   const SizedBox(height: 20),

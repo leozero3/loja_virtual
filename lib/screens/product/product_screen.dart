@@ -28,8 +28,9 @@ class ProductScreen extends StatelessWidget {
                   return IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () {
-                      Navigator.of(context)
-                          .pushReplacementNamed('/edit_product', arguments: product);
+                      Navigator.of(context).pushReplacementNamed(
+                          '/edit_product',
+                          arguments: product);
                     },
                   );
                 } else {
@@ -62,7 +63,10 @@ class ProductScreen extends StatelessWidget {
                 children: [
                   Text(
                     product.name,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -86,7 +90,8 @@ class ProductScreen extends StatelessWidget {
                     padding: EdgeInsets.only(top: 16, bottom: 8),
                     child: Text(
                       'Descrição',
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                     ),
                   ),
                   Text(
@@ -120,7 +125,9 @@ class ProductScreen extends StatelessWidget {
                             onPressed: product.selectedSize != null
                                 ? () {
                                     if (userManager.isLoggedIn) {
-                                      context.read<CartManager>().addToCart(product);
+                                      context
+                                          .read<CartManager>()
+                                          .addToCart(product);
                                       Navigator.of(context).pushNamed('/cart');
                                     } else {
                                       Navigator.of(context).pushNamed('/login');
