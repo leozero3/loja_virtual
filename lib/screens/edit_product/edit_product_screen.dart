@@ -102,7 +102,8 @@ class EditProductScreen extends StatelessWidget {
                     child: RaisedButton(
                       onPressed: () {
                         if (formKey.currentState.validate()) {
-                          print('valido');
+                          formKey.currentState.save();
+                          product.save();
                         }
                       },
                       color: primaryColor,

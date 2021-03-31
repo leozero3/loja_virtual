@@ -12,6 +12,10 @@ class Product extends ChangeNotifier {
     /// INICIALIZA COMO PRODUTOS VAZIOS PARA PODER CRIAR UM NOVO PRODUTO, AGORA Ñ SÃO MAIS NULOS.
   }
 
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  DocumentReference get firestoreRef => firestore.doc('products/$id');
+
   String id;
   String name;
   String description;
@@ -49,8 +53,8 @@ class Product extends ChangeNotifier {
       if (size.price < lowest && size.hasStock) {
         lowest = size.price;
       }
-      return lowest;
     }
+    return lowest;
   }
 
   set selectedSize(ItemSize value) {
@@ -63,6 +67,25 @@ class Product extends ChangeNotifier {
       return sizes.firstWhere((s) => s.name == name);
     } catch (e) {
       return null;
+    }
+  }
+
+  List<Map<String, dynamic>> exportSizeList() {
+    return sizes.map((size) => size.toMap()).toList();
+  }
+
+  Future<void> save() async {
+    final Map<String, dynamic> data = {
+      'name': name,
+      'description': description,
+      'sizes': exportSizeList(),
+    };
+
+    if (id == null) {
+      final doc = await firestore.collection('products').add(data);
+      id = doc.id;
+    } else {
+      await firestoreRef.update(data);
     }
   }
 
