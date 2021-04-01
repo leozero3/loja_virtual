@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:lojavirtual/models/item_size.dart';
+import 'package:uuid/uuid.dart';
 
 /// MODELO PARA SALVAR NO FIREBASE
 
@@ -13,8 +17,11 @@ class Product extends ChangeNotifier {
   }
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
   DocumentReference get firestoreRef => firestore.doc('products/$id');
+
+  Reference get storageRef => storage.ref().child('products').child(id);
 
   String id;
   String name;
@@ -86,6 +93,17 @@ class Product extends ChangeNotifier {
       id = doc.id;
     } else {
       await firestoreRef.update(data);
+    }
+
+    final List<String> updateImages = [];
+
+    for (final newImage in newImages) {
+      if (images.contains(newImage)) {
+        updateImages.add(newImage as String);
+      } else {
+        final UploadTask task = storageRef.child(Uuid().v1()).putFile(newImage as File);
+        final Task snapshot = await task.resume();
+      }
     }
   }
 
