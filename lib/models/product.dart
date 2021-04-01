@@ -30,6 +30,8 @@ class Product extends ChangeNotifier {
   List<ItemSize> sizes;
   ItemSize _selectedSize;
 
+  List<dynamic> newImages;
+
   Product.fromDocument(DocumentSnapshot document) {
     id = document.id;
     name = document['name'] as String;
@@ -101,10 +103,26 @@ class Product extends ChangeNotifier {
       if (images.contains(newImage)) {
         updateImages.add(newImage as String);
       } else {
-        final UploadTask task = storageRef.child(Uuid().v1()).putFile(newImage as File);
-        final Task snapshot = await task.resume();
+        final UploadTask task =
+            storageRef.child(Uuid().v1()).putFile(newImage as File);
+        final TaskSnapshot snapshot = await task;
+        final String url = await snapshot.ref.getDownloadURL();
+        updateImages.add(url);
       }
     }
+
+    for (final image in images) {
+      if (!newImages.contains(image)) {
+        try {
+          final ref = storage.refFromURL(image);
+          await ref.delete();
+        } catch (e) {
+          debugPrint('falha ao deletar $image');
+        }
+      }
+    }
+    
+    await firestoreRef.update({'images': updateImages});
   }
 
   Product clone() {
