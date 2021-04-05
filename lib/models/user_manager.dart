@@ -52,7 +52,7 @@ class UserManager extends ChangeNotifier {
           email: users.email, password: users.password);
 
       users.id = result.user.uid;
-      users = users;
+      //users = users;
 
       await users.saveData();
 

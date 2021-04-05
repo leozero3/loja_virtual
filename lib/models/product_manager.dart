@@ -1,16 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:lojavirtual/models/product.dart';
 
-/// RECUPERA AS INFORMAÇOES DOS
-/// PRODUTOS NO FIREBASE E SALVA
-/// NA VARIAVEL 'allProduct' E
-/// SALVA A FUNÇÃO '_loadAllProducts'
-/// EM 'ProductManager' QUE É CHAMADA NA
-/// 'main' ONDE É OBSERVADA AS MUDANÇAS
-
 class ProductManager extends ChangeNotifier {
-  ///var
+  ProductManager() {
+    _loadAllProducts();
+  }
+
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Product> allProducts = [];
   String _search = '';
@@ -24,40 +20,32 @@ class ProductManager extends ChangeNotifier {
 
   List<Product> get filteredProducts {
     final List<Product> filteredProducts = [];
-
     if (search.isEmpty) {
       filteredProducts.addAll(allProducts);
     } else {
-      filteredProducts.addAll(allProducts
-          .where((p) => p.name.toLowerCase().contains(search.toLowerCase())));
+      filteredProducts
+          .addAll(allProducts.where((p) => p.name.toLowerCase().contains(search.toLowerCase())));
     }
-
     return filteredProducts;
   }
 
   Future<void> _loadAllProducts() async {
-    final QuerySnapshot snapProducts =
-        await firestore.collection('products').get();
-
-    allProducts =
-        snapProducts.docs.map((d) => Product.fromDocument(d)).toList();
-
-    // for(DocumentSnapshot doc in snapProducts.docs){
-    //   print(doc.data());}
-
+    final QuerySnapshot snapProducts = await firestore.collection('products').get();
+    allProducts = snapProducts.docs.map((d) => Product.fromDocument(d)).toList();
     notifyListeners();
   }
 
-  ProductManager() {
-    _loadAllProducts();
-  }
-
-  Product findProductById(String id){
+  Product findProductById(String id) {
     try {
       return allProducts.firstWhere((p) => p.id == id);
-    } catch (e){
+    } catch (e) {
       return null;
     }
-    }
+  }
 
+  void update(Product product) {
+    allProducts.removeWhere((p) => p.id == product.id);
+    allProducts.add(product);
+    notifyListeners();
+  }
 }

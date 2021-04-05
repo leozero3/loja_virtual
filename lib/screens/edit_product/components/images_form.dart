@@ -28,24 +28,24 @@ class ImagesForm extends StatelessWidget {
         }
 
         return Column(
-          children: [
+          children: <Widget>[
             AspectRatio(
               aspectRatio: 1,
               child: Carousel(
-                images: state.value.map<Widget>((image) {
+                images: state.value.map<Widget>((image){
                   return Stack(
                     fit: StackFit.expand,
-                    children: [
-                      if (image is String)
-                        Image.network(image, fit: BoxFit.cover)
+                    children: <Widget>[
+                      if(image is String)
+                        Image.network(image, fit: BoxFit.cover,)
                       else
-                        Image.file(image as File, fit: BoxFit.cover),
+                        Image.file(image as File, fit: BoxFit.cover,),
                       Align(
                         alignment: Alignment.topRight,
                         child: IconButton(
                           icon: const Icon(Icons.remove),
                           color: Colors.red,
-                          onPressed: () {
+                          onPressed: (){
                             state.value.remove(image);
                             state.didChange(state.value);
                           },
