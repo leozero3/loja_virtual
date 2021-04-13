@@ -21,10 +21,12 @@ class ProductManager extends ChangeNotifier {
   List<Product> get filteredProducts {
     final List<Product> filteredProducts = [];
     if (search.isEmpty) {
+    print('manager 1 ========================');
       filteredProducts.addAll(allProducts);
     } else {
       filteredProducts
           .addAll(allProducts.where((p) => p.name.toLowerCase().contains(search.toLowerCase())));
+      print('manager 2 ========================');
     }
     return filteredProducts;
   }
@@ -32,6 +34,7 @@ class ProductManager extends ChangeNotifier {
   Future<void> _loadAllProducts() async {
     final QuerySnapshot snapProducts = await firestore.collection('products').get();
     allProducts = snapProducts.docs.map((d) => Product.fromDocument(d)).toList();
+    print('manager 3 ========================');
     notifyListeners();
   }
 
