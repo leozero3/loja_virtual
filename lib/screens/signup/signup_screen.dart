@@ -9,7 +9,7 @@ class SignUpScreen extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final Users users = Users();
+  final User users = User();
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +106,7 @@ class SignUpScreen extends StatelessWidget {
                           return;
                         }
                         context.read<UserManager>().signUp(
-                          users: users,
+                          user: users,
                           onSuccess: (){
                             Navigator.of(context).pop();
 

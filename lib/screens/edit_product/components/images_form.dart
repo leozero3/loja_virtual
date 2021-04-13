@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +7,9 @@ import 'package:lojavirtual/models/product.dart';
 import 'package:lojavirtual/screens/edit_product/components/image_source_sheet.dart';
 
 class ImagesForm extends StatelessWidget {
-  final Product product;
-
   const ImagesForm(this.product);
+
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +17,11 @@ class ImagesForm extends StatelessWidget {
       initialValue: List.from(product.images),
       validator: (images) {
         if (images.isEmpty) {
-          return 'Insira ao menos uma Imagem';
+          return 'Insira ao menos uma imagem';
         }
         return null;
       },
+      onSaved: (images) => product.newImages = images,
       builder: (state) {
         void onImageSelected(File file) {
           state.value.add(file);
@@ -32,20 +34,26 @@ class ImagesForm extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1,
               child: Carousel(
-                images: state.value.map<Widget>((image){
+                images: state.value.map<Widget>((image) {
                   return Stack(
                     fit: StackFit.expand,
                     children: <Widget>[
-                      if(image is String)
-                        Image.network(image, fit: BoxFit.cover,)
+                      if (image is String)
+                        Image.network(
+                          image,
+                          fit: BoxFit.cover,
+                        )
                       else
-                        Image.file(image as File, fit: BoxFit.cover,),
+                        Image.file(
+                          image as File,
+                          fit: BoxFit.cover,
+                        ),
                       Align(
                         alignment: Alignment.topRight,
                         child: IconButton(
                           icon: const Icon(Icons.remove),
                           color: Colors.red,
-                          onPressed: (){
+                          onPressed: () {
                             state.value.remove(image);
                             state.didChange(state.value);
                           },
@@ -63,18 +71,16 @@ class ImagesForm extends StatelessWidget {
                       onPressed: () {
                         if (Platform.isAndroid) {
                           showModalBottomSheet(
-                            context: context,
-                            builder: (_) => ImageSourceSheet(
-                              onImageSelected: onImageSelected,
-                            ),
-                          );
+                              context: context,
+                              builder: (_) => ImageSourceSheet(
+                                    onImageSelected: onImageSelected,
+                                  ));
                         } else {
                           showCupertinoModalPopup(
-                            context: context,
-                            builder: (_) => ImageSourceSheet(
-                              onImageSelected: onImageSelected,
-                            ),
-                          );
+                              context: context,
+                              builder: (_) => ImageSourceSheet(
+                                    onImageSelected: onImageSelected,
+                                  ));
                         }
                       },
                     ),
@@ -94,10 +100,10 @@ class ImagesForm extends StatelessWidget {
                   state.errorText,
                   style: const TextStyle(
                     color: Colors.red,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
-              ),
+              )
           ],
         );
       },

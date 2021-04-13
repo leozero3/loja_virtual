@@ -1,35 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:lojavirtual/models/product.dart';
 
-///CONTEUDO DO CARD DE PRODUTOS.
-
 class ProductListTile extends StatelessWidget {
-  final Product product;
 
   const ProductListTile(this.product);
+
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: (){
         Navigator.of(context).pushNamed('/product', arguments: product);
       },
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4)
+        ),
         child: Container(
           height: 100,
           padding: const EdgeInsets.all(8),
           child: Row(
-            children: [
+            children: <Widget>[
               AspectRatio(
                 aspectRatio: 1,
                 child: Image.network(product.images.first),
               ),
+              const SizedBox(width: 16,),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     Text(
                       product.name,
                       style: const TextStyle(
@@ -50,11 +53,22 @@ class ProductListTile extends StatelessWidget {
                     Text(
                       'R\$ ${product.basePrice.toStringAsFixed(2)}',
                       style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: Theme.of(context).primaryColor,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).primaryColor
                       ),
                     ),
+                    if(!product.hasStock)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Text(
+                          'Sem estoque',
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 10
+                          ),
+                        ),
+                      )
                   ],
                 ),
               )

@@ -9,7 +9,7 @@ class CartProduct extends ChangeNotifier {
   String size;
   String id;
 
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final Firestore firestore = Firestore.instance;
 
   ItemSize get itemSize {
     if (product == null) return null;
@@ -35,12 +35,12 @@ class CartProduct extends ChangeNotifier {
 
   ///cria um cartProduct com o documento que veio do firebase
   CartProduct.fromDocument(DocumentSnapshot document) {
-    id = document.id;
-    productId = document.data()['pid'] as String;
-    quantity = document.data()['quantity'] as int;
-    size = document.data()['size'] as String;
+    id = document.documentID;
+    productId = document.data['pid'] as String;
+    quantity = document.data['quantity'] as int;
+    size = document.data['size'] as String;
 
-    firestore.doc('products/$productId').get().then((doc) {
+    firestore.document('products/$productId').get().then((doc) {
       product = Product.fromDocument(doc);
       notifyListeners();
     });

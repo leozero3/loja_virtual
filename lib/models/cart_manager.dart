@@ -8,11 +8,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CartManager extends ChangeNotifier {
   List<CartProduct> items = [];
 
-  Users user;
+  User user;
   num productsPrice = 0.0;
 
   void updateUser(UserManager userManager) {
-    user = userManager.users;
+    user = userManager.user;
     items.clear();
     if (user != null) {
       _loadCartItems();
@@ -20,10 +20,10 @@ class CartManager extends ChangeNotifier {
   }
 
   Future<void> _loadCartItems() async {
-    final QuerySnapshot cartSnap = await user.cartReference.get();
+    final QuerySnapshot cartSnap = await user.cartReference.getDocuments();
 
     items =
-        cartSnap.docs.map((d) => CartProduct.fromDocument(d)..addListener(_onItemUpdated)).toList();
+        cartSnap.documents.map((d) => CartProduct.fromDocument(d)..addListener(_onItemUpdated)).toList();
   }
 
   void addToCart(Product product) {
@@ -34,7 +34,7 @@ class CartManager extends ChangeNotifier {
       final cartProduct = CartProduct.fromProduct(product);
       cartProduct.addListener(_onItemUpdated);
       items.add(cartProduct);
-      user.cartReference.add(cartProduct.toCartItemMap()).then((doc) => cartProduct.id = doc.id);
+      user.cartReference.add(cartProduct.toCartItemMap()).then((doc) => cartProduct.id = doc.documentID);
       _onItemUpdated();
     }
     notifyListeners();
@@ -43,7 +43,7 @@ class CartManager extends ChangeNotifier {
   /// REMOVE O PRODUTO DO CARRINHO e do firebase
   void removeOfCart(CartProduct cartProduct) {
     items.removeWhere((p) => p.id == cartProduct.id);
-    user.cartReference.doc(cartProduct.id).delete();
+    user.cartReference.document(cartProduct.id).delete();
     cartProduct.removeListener(_onItemUpdated);
     notifyListeners();
   }
@@ -69,7 +69,7 @@ class CartManager extends ChangeNotifier {
   ///ATUALIZA  QUANTIDADE DO PRODUTO
   void _updateCartProduct(CartProduct cartProduct) {
     if (cartProduct.id != null) {
-      user.cartReference.doc(cartProduct.id).update(cartProduct.toCartItemMap());
+      user.cartReference.document(cartProduct.id).updateData(cartProduct.toCartItemMap());
     }
   }
 

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Users {
+class User {
 
   String id;
   String name;
@@ -9,22 +9,22 @@ class Users {
   String confirmPassword;
   bool admin = false;
 
-  Users({this.name, this.email, this.password, this.id});
+  User({this.name, this.email, this.password, this.id});
 
-  Users.fromDocument(DocumentSnapshot document) {
+  User.fromDocument(DocumentSnapshot document) {
 
-    id = document.id;
-    name = document.data()['name'] as String;
-    email = document.data()['email'] as String;
+    id = document.documentID;
+    name = document.data['name'] as String;
+    email = document.data['email'] as String;
   }
 
   DocumentReference get firestoreRef =>
-      FirebaseFirestore.instance.doc('users/$id');
+      Firestore.instance.document('users/$id');
 
   CollectionReference get cartReference => firestoreRef.collection('cart');
 
   Future<void> saveData() async {
-    await firestoreRef.set(toMap());
+    await firestoreRef.setData(toMap());
   }
 
   Map<String, dynamic> toMap() {

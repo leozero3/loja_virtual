@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lojavirtual/helpers/firebase_errors.dart';
-import 'package:lojavirtual/models/user.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lojavirtual/models/user.dart';
 
 class UserManager extends ChangeNotifier {
   UserManager() {
@@ -11,25 +12,23 @@ class UserManager extends ChangeNotifier {
   }
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final Firestore firestore = Firestore.instance;
 
-  Users users;
   User user;
 
   bool _loading = false;
 
   bool get loading => _loading;
 
-  bool get isLoggedIn => users != null;
+  bool get isLoggedIn => user != null;
 
   ///======================================================
   ///login
-  Future<void> signIn(
-      {Users users, Function onFail, Function onSuccess}) async {
+  Future<void> signIn({User user, Function onFail, Function onSuccess}) async {
     loading = true;
     try {
-      final UserCredential result = await auth.signInWithEmailAndPassword(
-          email: users.email, password: users.password);
+      final AuthResult result =
+          await auth.signInWithEmailAndPassword(email: user.email, password: user.password);
 
       await _loadCurrentUser(firebaseUser: result.user);
 
@@ -43,18 +42,16 @@ class UserManager extends ChangeNotifier {
   ///========================================================
 
   ///criar conta
-  Future<void> signUp(
-      {Users users, Function onFail, Function onSuccess}) async {
+  Future<void> signUp({User user, Function onFail, Function onSuccess}) async {
     loading = true;
-
     try {
-      final UserCredential result = await auth.createUserWithEmailAndPassword(
-          email: users.email, password: users.password);
+      final AuthResult result =
+          await auth.createUserWithEmailAndPassword(email: user.email, password: user.password);
 
-      users.id = result.user.uid;
-      //users = users;
+      user.id = result.user.uid;
+      this.user = user;
 
-      await users.saveData();
+      await user.saveData();
 
       onSuccess();
     } on PlatformException catch (e) {
@@ -79,21 +76,21 @@ class UserManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _loadCurrentUser({User firebaseUser}) async {
-    final User currentuser = firebaseUser ?? auth.currentUser;
-    if (currentuser != null) {
+  Future<void> _loadCurrentUser({FirebaseUser firebaseUser}) async {
+    final FirebaseUser currentUser = firebaseUser ?? await auth.currentUser();
+    if (currentUser != null) {
       final DocumentSnapshot docUser =
-          await firestore.collection('users').doc(currentuser.uid).get();
-      users = Users.fromDocument(docUser);
+          await firestore.collection('users').document(currentUser.uid).get();
+      user = User.fromDocument(docUser);
 
-      final docAdmin = await firestore.collection('admin').doc(users.id).get();
+      final docAdmin = await firestore.collection('admin').document(user.id).get();
       if (docAdmin.exists) {
-        users.admin = true;
+        user.admin = true;
       }
 
       notifyListeners();
     }
   }
 
-  bool get adminEnabled => users != null && users.admin;
+  bool get adminEnabled => user != null && user.admin;
 }

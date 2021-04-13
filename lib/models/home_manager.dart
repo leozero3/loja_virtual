@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lojavirtual/models/section.dart';
 
 class HomeManager extends ChangeNotifier{
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final Firestore firestore = Firestore.instance;
 
   HomeManager() {
     _loadSections();
@@ -14,7 +14,7 @@ class HomeManager extends ChangeNotifier{
   Future<void> _loadSections() async {
     firestore.collection('home').snapshots().listen((snapshot) {
       section.clear();
-      for (final DocumentSnapshot document in snapshot.docs) {
+      for (final DocumentSnapshot document in snapshot.documents) {
         section.add(Section.fromDocument(document));
       }
       notifyListeners();
