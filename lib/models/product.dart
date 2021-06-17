@@ -19,14 +19,27 @@ class Product extends ChangeNotifier {
   }
   final Firestore firestore = Firestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
+
   DocumentReference get firestoreRef => firestore.document('products/$id');
   StorageReference get storageRef => storage.ref().child('products').child(id);
+
   String id;
   String name;
   String description;
   List<String> images;
   List<ItemSize> sizes;
   List<dynamic> newImages;
+
+  bool _loading = false;
+
+
+  bool get loading => _loading;
+
+  set loading(bool value) {
+    _loading = value;
+    notifyListeners();
+  }
+
   ItemSize _selectedSize;
   ItemSize get selectedSize => _selectedSize;
   set selectedSize(ItemSize value){
@@ -63,6 +76,8 @@ class Product extends ChangeNotifier {
     return sizes.map((size) => size.toMap()).toList();
   }
   Future<void> save() async {
+    loading = true;
+
     final Map<String, dynamic> data = {
       'name': name,
       'description': description,
@@ -100,6 +115,10 @@ class Product extends ChangeNotifier {
     }
 
     await firestoreRef.updateData({'images': updateImages});
+
+    images = updateImages;
+
+    loading = false;
   }
 
   Product clone(){
